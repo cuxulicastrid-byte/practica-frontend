@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Práctica Despliegue Web</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eef2f7;
+      color: #1f2937;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .tarjeta {
+      background: #ffffff;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      padding: 24px;
+    }
+    h1 { font-size: 1.4rem; margin: 0 0 4px; color: #0f4c81; }
+    .subtitulo { margin: 0 0 20px; color: #6b7280; font-size: 0.9rem; }
+    .mensaje { background: #e6f4ea; color: #1e7e34; padding: 10px; border-radius: 8px; margin-bottom: 16px; }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 8px; border-bottom: 1px solid #e5e7eb; }
+    td:first-child { font-weight: bold; width: 40%; color: #374151; }
+    .timestamp { margin-top: 16px; font-size: 0.85rem; color: #6b7280; }
+    .cargando { color: #0f4c81; font-style: italic; }
+    .error { background: #fdecea; color: #b42318; padding: 12px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="tarjeta">
+    <h1>Práctica: Despliegue web</h1>
+    <p class="subtitulo">Frontend en Vercel consumiendo API en Render</p>
+    <div id="contenido">
+      <p class="cargando">Cargando…</p>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:3000";
+
+    const etiquetas = {
+      estudiante: "Estudiante",
+      carne: "Carné",
+      curso: "Curso",
+      campus: "Campus",
+      tecnologia: "Tecnología",
+      plataforma: "Plataforma"
+    };
+
+    async function cargarDatos() {
+      const contenido = document.getElementById("contenido");
+      try {
+        const respuesta = await fetch(API_URL + "/test");
+        if (!respuesta.ok) {
+          throw new Error("La API respondió con código " + respuesta.status);
+        }
+        const json = await respuesta.json();
+
+        let filas = "";
+        for (const clave in json.data) {
+          const nombre = etiquetas[clave] || clave;
+          filas += "<tr><td>" + nombre + "</td><td>" + json.data[clave] + "</td></tr>";
+        }
+
+        contenido.innerHTML =
+          '<div class="mensaje">' + json.message + "</div>" +
+          "<table>" + filas + "</table>" +
+          '<p class="timestamp">Timestamp: ' + json.timestamp + "</p>";
+      } catch (error) {
+        contenido.innerHTML =
+          '<div class="error">No se pudo conectar con la API. ' + error.message + "</div>";
+      }
+    }
+
+    cargarDatos();
+  </script>
+</body>
+</html>
